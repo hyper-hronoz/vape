@@ -40,7 +40,11 @@ Src/main.c \
 Src/CLOCK/configure_SYSCLOCK.c \
 Src/USART/configure_USART2.c \
 Src/TIM/configure_TIM4.c \
+Src/TIM/delay.c \
 Src/I2C/configure_I2C.c \
+Src/AHB/configure_AHB.c \
+Src/APB1/configure_APB1.c \
+Src/APB2/configure_APB2.c \
 Src/LIBS/stm32f1xx_it.c \
 Src/LIBS/stm32f1xx_hal_msp.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
@@ -117,6 +121,9 @@ C_INCLUDES =  \
 -IInc/LIBS \
 -IInc/CLOCK \
 -IInc/GPIO \
+-IInc/AHB \
+-IInc/APB1 \
+-IInc/APB2 \
 -IInc/I2C \
 -IInc/TIM \
 -IInc/USART \

@@ -1,1 +1,1 @@
-tmux kill-session -a -t "openocd"
+tmux kill-session -t "openocd"
