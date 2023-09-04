@@ -25,10 +25,12 @@ int main() {
   configure_APB2();
 
   configure_TIM4();
+  configure_I2C();
   
   uint32_t currentclock = SystemCoreClock;
 
   RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
+
 
   GPIOC->CRH |= (GPIO_CRH_MODE13_0 | GPIO_CRH_MODE13_1);
   GPIOC->CRH &= ~(GPIO_CRH_CNF13_0 | GPIO_CRH_CNF13_1);
