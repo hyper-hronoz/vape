@@ -42,6 +42,7 @@ Src/USART/configure_USART2.c \
 Src/TIM/configure_TIM4.c \
 Src/TIM/delay.c \
 Src/I2C/configure_I2C.c \
+Src/I2C/transmitter_I2C.c \
 Src/AHB/configure_AHB.c \
 Src/APB1/configure_APB1.c \
 Src/APB2/configure_APB2.c \
