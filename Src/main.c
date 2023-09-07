@@ -29,6 +29,7 @@
 
 
 void SSD_init() {
+	delay(1000);
   SSD1306_WRITECOMMAND(0xAE); //display off
 	SSD1306_WRITECOMMAND(0x20); //Set Memory Addressing Mode   
 	SSD1306_WRITECOMMAND(0x10); //00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
@@ -69,9 +70,9 @@ int main() {
   configure_TIM4();
   configure_I2C();
 
-  SSD_init();
-  
   uint32_t currentclock = SystemCoreClock;
+
+  SSD_init();
 
   RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
 
