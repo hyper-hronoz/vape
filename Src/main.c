@@ -49,11 +49,6 @@ int main() {
   configure_display();
 
   // SSD1306_GotoXY(10, 10);
-  // SSD1306_DrawPixel(10, 10, 1);
-  // SSD1306_DrawPixel(0, 0, 1);
-  // SSD1306_DrawPixel(0, 1, 1);
-  // SSD1306_DrawPixel(1, 0, 1);
-  // SSD1306_DrawPixel(1, 1, 1);
 
   SSD1306_Puts("9h", &Font_7x10, 1);
 
