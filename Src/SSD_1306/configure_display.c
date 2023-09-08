@@ -30,4 +30,14 @@ void configure_display() {
 	SSD1306_WRITECOMMAND(0x8D); //--set DC-DC enable
 	SSD1306_WRITECOMMAND(0x14); //
 	SSD1306_WRITECOMMAND(0xAF); //--turn on SSD1306 panel
+
+	SSD1306_Fill(SSD1306_COLOR_BLACK);
+	SSD1306_UpdateScreen();
+
+	  /* Set default values */
+  SSD1306.CurrentX = 0;
+  SSD1306.CurrentY = 0;
+  //
+  /* Initialized OK */
+  SSD1306.Initialized = 1;
 }

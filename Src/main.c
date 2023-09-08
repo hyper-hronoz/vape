@@ -30,6 +30,11 @@
 /* Absolute value */
 #define ABS(x)   ((x) > 0 ? (x) : -(x))
 
+void SSD1306_GotoXY(uint16_t x, uint16_t y) {
+  /* Set write pointers */
+  SSD1306.CurrentX = x;
+  SSD1306.CurrentY = y;
+}
 
 int main() {
   configure_SYSCLOCK(); // ^
@@ -43,9 +48,17 @@ int main() {
 
   configure_display();
 
-  FontDef_t newFont;
+  // SSD1306_GotoXY(10, 10);
+  // SSD1306_DrawPixel(10, 10, 1);
+  // SSD1306_DrawPixel(0, 0, 1);
+  // SSD1306_DrawPixel(0, 1, 1);
+  // SSD1306_DrawPixel(1, 0, 1);
+  // SSD1306_DrawPixel(1, 1, 1);
 
-  SSD1306_Puts("hi", &newFont, SSD1306_COLOR_WHITE); 
+  SSD1306_Puts("9h", &Font_7x10, 1);
+
+  SSD1306_UpdateScreen(); //display
+
 
   uint32_t currentclock = SystemCoreClock;
 

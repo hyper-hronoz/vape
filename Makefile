@@ -39,6 +39,7 @@ C_SOURCES =  \
 Src/main.c \
 Src/SSD_1306/configure_display.c \
 Src/SSD_1306/display_transmitter.c \
+Src/SSD_1306/fonts.c \
 Src/CLOCK/configure_SYSCLOCK.c \
 Src/USART/configure_USART2.c \
 Src/TIM/configure_TIM4.c \
