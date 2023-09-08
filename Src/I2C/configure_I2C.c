@@ -8,7 +8,7 @@ typedef enum {
 
 void configure_I2C() {
   uint8_t mode = I2C_FAST;
-  uint32_t PCLK1_FREQUENCY = SystemCoreClock;
+  uint32_t PCLK1_FREQUENCY = SystemCoreClock / 2;
 
   RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;				// 1: I2C1 clock enabled
 	RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;				// 1: I/O port B clock enabled

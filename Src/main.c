@@ -50,7 +50,7 @@ int main() {
 
   // SSD1306_GotoXY(10, 10);
 
-  SSD1306_Puts("9h", &Font_7x10, 1);
+  SSD1306_Puts("see there is no emotion", &Font_7x10, 1);
 
   SSD1306_UpdateScreen(); //display
 

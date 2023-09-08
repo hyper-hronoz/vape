@@ -1,4 +1,5 @@
 #include "display_transmitter.h"
+#include "delay.h"
 
 
 void ssd1306_I2C_WriteMulti(uint8_t address, uint8_t reg, char *data,
@@ -93,7 +94,7 @@ char SSD1306_Puts(char* str, FontDef_t* Font, SSD1306_COLOR_t color) {
 			/* Return error */
 			return *str;
 		}
-		
+
 		/* Increase string pointer */
 		str++;
 	}
