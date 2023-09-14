@@ -19,7 +19,17 @@
 #define SSD1306_WRITECOMMAND(command)                                          \
   i2c_writeByte(SSD1306_I2C_ADDR, 0x00, (command))
 
-static char SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
+#define SSD1306_I2C_ADDR 0x3C
+
+#define SSD1306_WRITECOMMAND(command)                                          \
+  i2c_writeByte(SSD1306_I2C_ADDR, 0x00, (command))
+/* Write data */
+#define SSD1306_WRITEDATA(data) i2c_writeByte(SSD1306_I2C_ADDR, 0x40, (data))
+/* Absolute value */
+#define ABS(x) ((x) > 0 ? (x) : -(x))
+
+
+void SSD1306_GotoXY(uint16_t x, uint16_t y);
 
 typedef struct {
   uint16_t CurrentX;
@@ -28,7 +38,8 @@ typedef struct {
   uint8_t Initialized;
 } SSD1306_t;
 
-static SSD1306_t SSD1306;
+extern SSD1306_t SSD1306;
+extern char SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
 
 char SSD1306_Putc(char ch, FontDef_t *Font, SSD1306_COLOR_t color);
 void SSD1306_UpdateScreen(void);

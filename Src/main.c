@@ -22,20 +22,6 @@
 // utils
 #include "delay.h"
 
-#define SSD1306_I2C_ADDR 0x3C
-
-#define SSD1306_WRITECOMMAND(command)                                          \
-  i2c_writeByte(SSD1306_I2C_ADDR, 0x00, (command))
-/* Write data */
-#define SSD1306_WRITEDATA(data) i2c_writeByte(SSD1306_I2C_ADDR, 0x40, (data))
-/* Absolute value */
-#define ABS(x) ((x) > 0 ? (x) : -(x))
-
-void SSD1306_GotoXY(uint16_t x, uint16_t y) {
-  /* Set write pointers */
-  SSD1306.CurrentX = x;
-  SSD1306.CurrentY = y;
-}
 
 int main() {
   configure_SYSCLOCK(); // ^
@@ -57,7 +43,7 @@ int main() {
   //
   uint16_t data = SSD1306.CurrentX;
   uint16_t newData = SSD1306.CurrentY;
-  
+
   delay(500);
 
   SSD1306_GotoXY(10, 30);
@@ -65,7 +51,7 @@ int main() {
   SSD1306_Puts("see", &Font_7x10, 1);
 
   SSD1306_UpdateScreen(); // display
-  
+
   delay(500);
 
   uint32_t currentclock = SystemCoreClock;
@@ -84,16 +70,12 @@ int main() {
 
   int counter = 0;
 
-  GPIOB->CRL &= ~(0b11 << 16);
-  GPIOA->CRL &= ~(0b11 << 18);
-  GPIOA->CRL |= (0b10 << 18);
-  GPIOA->ODR |= 0xFFFFFF;
+  GPIOB->CRL &= ~(GPIO_CRL_MODE4_Msk);
+  GPIOA->CRL &= ~(GPIO_CRL_CNF4_Msk);
+  GPIOA->CRL |= (GPIO_CRL_CNF4_1);
+  GPIOA->ODR |= GPIO_ODR_ODR4;
 
   while (1) {
-    // SSD1306_Fill(0);
-    // SSD1306_UpdateScreen();
-    // delay(1000);
-    //
     if (GPIOA->IDR & (0b1 << 4)) {
       GPIOC->ODR &= ~(0b1 << 13);
       char info[100] = {0};
@@ -105,8 +87,6 @@ int main() {
       SSD1306_GotoXY(10, 10);
       counter++;
     } else {
-      SSD1306_GotoXY(20, 20);
-      SSD1306_Puts("fuck", &Font_7x10, 1);
       SSD1306_UpdateScreen();
       GPIOC->ODR |= 0b1 << 13;
     }
