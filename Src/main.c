@@ -64,16 +64,24 @@ int main() {
   GPIOC->CRH &= ~(GPIO_CRH_CNF13_0 | GPIO_CRH_CNF13_1);
   GPIOC->ODR |= GPIO_ODR_ODR13;
 
-  // GPIOA->CRL &= ~(0b11 << 0); // input mode
-  // GPIOA->CRL &= ~(0b11 << 2); // resetting pin value
-  // GPIOA->CRL |= (0b11 << 2);
-
   int counter = 0;
 
-  GPIOB->CRL &= ~(GPIO_CRL_MODE4_Msk);
+  // configuring encoder button
+  GPIOA->CRL &= ~(GPIO_CRL_MODE4_Msk);
   GPIOA->CRL &= ~(GPIO_CRL_CNF4_Msk);
   GPIOA->CRL |= (GPIO_CRL_CNF4_1);
   GPIOA->ODR |= GPIO_ODR_ODR4;
+
+  // configuring timers for encoder
+  GPIOA->CRH &= ~(GPIO_CRH_MODE8_Msk);
+  GPIOA->CRH |= (GPIO_CRH_MODE8_1);
+  GPIOA->CRH |= (GPIO_CRH_CNF8_Msk);
+
+  // configuring timers for encoder
+  GPIOA->CRH &= ~(GPIO_CRH_MODE9_Msk);
+  GPIOA->CRH |= (GPIO_CRH_MODE9_1);
+  GPIOA->CRH |= (GPIO_CRH_CNF9_Msk);
+
 
   while (1) {
     if (GPIOA->IDR & (0b1 << 4)) {
