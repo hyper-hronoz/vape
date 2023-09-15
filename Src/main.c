@@ -63,22 +63,6 @@ int main() {
   // enabling tim1
   RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
 
-  // configuring timers for encoder
-  GPIOA->CRH &= ~(GPIO_CRH_MODE8_Msk); // resetting mode8(input)
-  GPIOA->CRH |= (GPIO_CRH_MODE8_0);
-  // GPIOA->CRH |= (GPIO_CRH_MODE8_1);
-  // GPIOA->CRH |= (GPIO_CRH_CNF8_1);
-  GPIOA->CRH |= (GPIO_CRH_CNF8_Msk);
-  // GPIOA->CRH |= (GPIO_CRH_CNF8_0);
-
-  // configuring timers for encoder
-  GPIOA->CRH &= ~(GPIO_CRH_MODE9_Msk); // resetting mode9(input)
-  GPIOA->CRH |= (GPIO_CRH_MODE9_0);
-  // GPIOA->CRH |= (GPIO_CRH_MODE9_1);
-  // GPIOA->CRH |= (GPIO_CRH_CNF9_1);
-  GPIOA->CRH |= (GPIO_CRH_CNF9_Msk);
-  // GPIOA->CRH |= (GPIO_CRH_CNF9_0);
-
   // configuaring timer
   TIM1->CCMR1 |= (TIM_CCMR1_CC1S_0 | TIM_CCMR1_CC2S_0);
   TIM1->CCMR1 &= ~(TIM_CCMR1_CC1S_1 | TIM_CCMR1_CC2S_1);
@@ -100,30 +84,27 @@ int main() {
                   TIM_CCMR1_IC2F_3);
 
   // 1uto-Reload Register (MAX counter number)
-  TIM1->ARR = 30;
+  TIM1->ARR = 300; 
 
   // 1: Counter enabled
   TIM1->CR1 |= TIM_CR1_CEN;
 
-
   int counter = 0;
-  int8_t Enc_Counter = 0;
+  uint16_t Enc_Counter = 0;
 
   while (1) {
-    Enc_Counter += TIM1->CNT;
+    Enc_Counter = TIM1->CNT;
     if (GPIOA->IDR & (0b1 << 4)) {
+      SSD1306_Fill(SSD1306_COLOR_BLACK);
+      SSD1306_UpdateScreen();
       GPIOC->ODR &= ~(0b1 << 13);
       char info[100] = {0};
       SSD1306_GotoXY(10, 10);
       // delay(1000);
       sprintf(info, "counter: %d", Enc_Counter);
       SSD1306_Puts(info, &Font_7x10, 1);
-      SSD1306_GotoXY(10, 10);
       SSD1306_UpdateScreen();
-      SSD1306_GotoXY(10, 10);
-      // counter++;
     } else {
-      SSD1306_UpdateScreen();
       GPIOC->ODR |= 0b1 << 13;
     }
   }
