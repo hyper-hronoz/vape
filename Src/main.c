@@ -22,7 +22,6 @@
 // utils
 #include "delay.h"
 
-
 int main() {
   configure_SYSCLOCK(); // ^
 
@@ -43,16 +42,6 @@ int main() {
   //
   uint16_t data = SSD1306.CurrentX;
   uint16_t newData = SSD1306.CurrentY;
-
-  delay(500);
-
-  SSD1306_GotoXY(10, 30);
-
-  SSD1306_Puts("see", &Font_7x10, 1);
-
-  SSD1306_UpdateScreen(); // display
-
-  delay(500);
 
   uint32_t currentclock = SystemCoreClock;
 
