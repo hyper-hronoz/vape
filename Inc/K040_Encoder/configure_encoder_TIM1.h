@@ -3,8 +3,6 @@
 
 #include "stm32f1xx.h"
 
-void configure_TIM1() {
-  RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
-}
+void configure_encoder_TIM1();
 
 #endif

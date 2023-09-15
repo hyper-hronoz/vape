@@ -42,6 +42,9 @@ Src/SSD_1306/display_transmitter.c \
 Src/SSD_1306/fonts.c \
 Src/CLOCK/configure_SYSCLOCK.c \
 Src/USART/configure_USART2.c \
+Src/K040_Encoder/configure_encoder.c \
+Src/K040_Encoder/configure_encoder_TIM1.c \
+Src/K040_Encoder/configure_encoder_gpio.c \
 Src/TIM/configure_TIM4.c \
 Src/TIM/delay.c \
 Src/I2C/configure_I2C.c \
@@ -129,6 +132,7 @@ C_INCLUDES =  \
 -IInc/AHB \
 -IInc/APB1 \
 -IInc/APB2 \
+-IInc/K040_Encoder \
 -IInc/I2C \
 -IInc/TIM \
 -IInc/USART \
