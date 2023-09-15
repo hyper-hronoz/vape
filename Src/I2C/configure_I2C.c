@@ -12,6 +12,8 @@ void configure_I2C() {
 
   RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;				// 1: I2C1 clock enabled
 	RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;				// 1: I/O port B clock enabled
+
+	//  this enables afio mapr in short it required if u need select
 	RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;				// 1: Alternate Function I/O clock enabled
 
 	// SCL1
