@@ -36,12 +36,6 @@ int main() {
 
   configure_display();
 
-  SSD1306_GotoXY(10, 30);
-
-  SSD1306_Puts("see", &Font_7x10, 1);
-
-  SSD1306_UpdateScreen(); // display
-  //
   uint16_t data = SSD1306.CurrentX;
   uint16_t newData = SSD1306.CurrentY;
 
@@ -58,21 +52,22 @@ int main() {
 
   configure_encoder();
 
-  int counter = 0;
-  uint16_t Enc_Counter = 0;
+  uint16_t encoder_counter_current = 0;
+  uint16_t encoder_counter_prev = 0;
 
   while (1) {
-    Enc_Counter = TIM1->CNT;
-    if (GPIOA->IDR & (0b1 << 4)) {
-      SSD1306_Fill(SSD1306_COLOR_BLACK);
-      SSD1306_UpdateScreen();
-      GPIOC->ODR &= ~(0b1 << 13);
-      char info[100] = {0};
+    encoder_counter_current = TIM1->CNT;
+    if (encoder_counter_current != encoder_counter_prev) {
       SSD1306_GotoXY(10, 10);
-      // delay(1000);
-      sprintf(info, "counter: %d", Enc_Counter);
+      char info[100] = {0};
+      sprintf(info, "Power: %d   ", encoder_counter_current);
       SSD1306_Puts(info, &Font_7x10, 1);
+
       SSD1306_UpdateScreen();
+      encoder_counter_prev = encoder_counter_current;
+    }
+    if (GPIOA->IDR & (0b1 << 4)) {
+      GPIOC->ODR &= ~(0b1 << 13);
     } else {
       GPIOC->ODR |= 0b1 << 13;
     }
