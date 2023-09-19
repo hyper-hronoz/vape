@@ -38,6 +38,7 @@ BUILD_DIR = build
 C_SOURCES =  \
 Src/main.c \
 Src/SSD_1306/configure_display.c \
+Src/FLASH/flash_rw.c \
 Src/SSD_1306/display_transmitter.c \
 Src/SSD_1306/fonts.c \
 Src/CLOCK/configure_SYSCLOCK.c \
@@ -130,6 +131,7 @@ C_INCLUDES =  \
 -IInc/SSD_1306 \
 -IInc/GPIO \
 -IInc/AHB \
+-IInc/FLASH \
 -IInc/APB1 \
 -IInc/APB2 \
 -IInc/K040_Encoder \
