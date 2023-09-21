@@ -26,6 +26,17 @@
 
 #include "flash_rw.h"
 
+void EXTI4_IRQHandler(void) {
+
+  if (GPIOC->ODR & 0b1 << 13){
+    GPIOC->ODR &= ~(0b1 << 13);
+  } else {
+    GPIOC->ODR |= 0b1 << 13;
+  }
+
+  EXTI->PR = EXTI_PR_PR4;
+}
+
 int main() {
   configure_SYSCLOCK(); // ^
 
@@ -63,32 +74,36 @@ int main() {
     encoder_counter_current = saved_encoder_counter_value;
   }
 
-  TIM1->CNT &= ~(0xFFFFFF);
-  TIM1->CNT |= saved_encoder_counter_value;
+  // enabling gpio encoder iterrupt
+  RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+  AFIO->EXTICR[1] &= ~(AFIO_EXTICR2_EXTI4);
+
+  EXTI->IMR |= EXTI_IMR_IM4;
+  EXTI->FTSR |= EXTI_FTSR_FT4;
+
+  NVIC_EnableIRQ(EXTI4_IRQn);
+
+  GPIOC->ODR |= 0b1 << 13;
 
   while (1) {
-    if (is_read) {
-      encoder_counter_current = TIM1->CNT;
-    }
-    if (encoder_counter_current != encoder_counter_prev || encoder_counter_prev == 1000) {
-      SSD1306_GotoXY(10, 10);
-      char info[100] = {0};
-      sprintf(info, "Power: %d   ", encoder_counter_current);
-      SSD1306_Puts(info, &Font_7x10, 1);
-      SSD1306_UpdateScreen();
-
-      flash_unlock();
-      flash_erase_page(VOLATAGE_ADDRESS);
-      flash_write(VOLATAGE_ADDRESS, encoder_counter_current);
-      flash_lock();
-
-      encoder_counter_prev = encoder_counter_current;
-    }
-    if (GPIOA->IDR & (0b1 << 4)) {
-      GPIOC->ODR &= ~(0b1 << 13);
-    } else {
-      GPIOC->ODR |= 0b1 << 13;
-    }
-    is_read = 1;
+    // if (is_read) {
+    //   encoder_counter_current = TIM1->CNT;
+    // }
+    // if (encoder_counter_current != encoder_counter_prev ||
+    //     encoder_counter_prev == 1000) {
+    //   SSD1306_GotoXY(10, 10);
+    //   char info[100] = {0};
+    //   sprintf(info, "Power: %d   ", encoder_counter_current);
+    //   SSD1306_Puts(info, &Font_7x10, 1);
+    //   SSD1306_UpdateScreen();
+    //
+    //   flash_unlock();
+    //   flash_erase_page(VOLATAGE_ADDRESS);
+    //   flash_write(VOLATAGE_ADDRESS, encoder_counter_current);
+    //   flash_lock();
+    //
+    //   encoder_counter_prev = encoder_counter_current;
+    // }
+    // is_read = 1;
   }
 }
