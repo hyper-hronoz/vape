@@ -47,6 +47,8 @@ int main() {
   RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;
   RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
 
+  RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
+
   // configuring PC13 led
   GPIOC->CRH |= (GPIO_CRH_MODE13_0 | GPIO_CRH_MODE13_1);
   GPIOC->CRH &= ~(GPIO_CRH_CNF13_0 | GPIO_CRH_CNF13_1);
@@ -63,14 +65,24 @@ int main() {
     encoder_counter_current = saved_encoder_counter_value;
   }
 
-  TIM1->CNT &= ~(0xFFFFFF);
-  TIM1->CNT |= saved_encoder_counter_value;
+
+
+  GPIOA->CRL |= 0b1011; // выход, частота 50МГц
+  GPIOA->CRL &= 0b1011; // пушпул, альтернативная функция
+  
+  TIM2->PSC = 7200 - 1; // насколько делится максимальная частота
+  TIM2->ARR = 10000 - 1; // до скольки таймер считает перед сбросом
+  TIM2->CCR1 = 5000 - 1; // на каком числе переключение
+  TIM2->CCER |= 1;       // разблокируем выход
+  TIM2->CCMR1 |= 3 << 5; // режим ШИМ1
+  TIM2->CR1 |= 1;        // запускаем таймер
 
   while (1) {
     if (is_read) {
       encoder_counter_current = TIM1->CNT;
     }
-    if (encoder_counter_current != encoder_counter_prev || encoder_counter_prev == 1000) {
+    if (encoder_counter_current != encoder_counter_prev ||
+        encoder_counter_prev == 1000) {
       SSD1306_GotoXY(10, 10);
       char info[100] = {0};
       sprintf(info, "Power: %d   ", encoder_counter_current);
