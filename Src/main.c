@@ -27,6 +27,9 @@
 #include "flash_rw.h"
 
 void EXTI4_IRQHandler(void) {
+  __disable_irq();
+  // NVIC_DisableIRQ(EXTI4_IRQn);
+  delay(180);
 
   if (GPIOC->ODR & 0b1 << 13){
     GPIOC->ODR &= ~(0b1 << 13);
@@ -34,7 +37,10 @@ void EXTI4_IRQHandler(void) {
     GPIOC->ODR |= 0b1 << 13;
   }
 
-  EXTI->PR = EXTI_PR_PR4;
+
+  // NVIC_EnableIRQ(EXTI4_IRQn);
+  EXTI->PR |= EXTI_PR_PR4;
+  __enable_irq();
 }
 
 int main() {
@@ -77,15 +83,15 @@ int main() {
   }
 
 
-  GPIOA->CRL |= 0b1011; // выход, частота 50МГц
-  GPIOA->CRL &= 0b1011; // пушпул, альтернативная функция
+  // GPIOA->CRL |= 0b1011; // выход, частота 50МГц
+  // GPIOA->CRL &= 0b1011; // пушпул, альтернативная функция
   
-  TIM2->PSC = 7200 - 1; // насколько делится максимальная частота
-  TIM2->ARR = 10000 - 1; // до скольки таймер считает перед сбросом
-  TIM2->CCR1 = 5000 - 1; // на каком числе переключение
-  TIM2->CCER |= 1;       // разблокируем выход
-  TIM2->CCMR1 |= 3 << 5; // режим ШИМ1
-  TIM2->CR1 |= 1;        // запускаем таймер
+  // TIM2->PSC = 7200 - 1; // насколько делится максимальная частота
+  // TIM2->ARR = 10000 - 1; // до скольки таймер считает перед сбросом
+  // TIM2->CCR1 = 5000 - 1; // на каком числе переключение
+  // TIM2->CCER |= 1;       // разблокируем выход
+  // TIM2->CCMR1 |= 3 << 5; // режим ШИМ1
+  // TIM2->CR1 |= 1;        // запускаем таймер
 
   // enabling gpio encoder iterrupt
   RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
@@ -97,6 +103,8 @@ int main() {
   NVIC_EnableIRQ(EXTI4_IRQn);
 
   GPIOC->ODR |= 0b1 << 13;
+
+  EXTI->PR |= EXTI_PR_PR4;
 
   while (1) {
     if (is_read) {
