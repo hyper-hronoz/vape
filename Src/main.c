@@ -26,6 +26,17 @@
 
 #include "flash_rw.h"
 
+void EXTI4_IRQHandler(void) {
+
+  if (GPIOC->ODR & 0b1 << 13){
+    GPIOC->ODR &= ~(0b1 << 13);
+  } else {
+    GPIOC->ODR |= 0b1 << 13;
+  }
+
+  EXTI->PR = EXTI_PR_PR4;
+}
+
 int main() {
   configure_SYSCLOCK(); // ^
 
@@ -66,7 +77,6 @@ int main() {
   }
 
 
-
   GPIOA->CRL |= 0b1011; // выход, частота 50МГц
   GPIOA->CRL &= 0b1011; // пушпул, альтернативная функция
   
@@ -76,6 +86,17 @@ int main() {
   TIM2->CCER |= 1;       // разблокируем выход
   TIM2->CCMR1 |= 3 << 5; // режим ШИМ1
   TIM2->CR1 |= 1;        // запускаем таймер
+
+  // enabling gpio encoder iterrupt
+  RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+  AFIO->EXTICR[1] &= ~(AFIO_EXTICR2_EXTI4);
+
+  EXTI->IMR |= EXTI_IMR_IM4;
+  EXTI->FTSR |= EXTI_FTSR_FT4;
+
+  NVIC_EnableIRQ(EXTI4_IRQn);
+
+  GPIOC->ODR |= 0b1 << 13;
 
   while (1) {
     if (is_read) {
@@ -95,11 +116,6 @@ int main() {
       flash_lock();
 
       encoder_counter_prev = encoder_counter_current;
-    }
-    if (GPIOA->IDR & (0b1 << 4)) {
-      GPIOC->ODR &= ~(0b1 << 13);
-    } else {
-      GPIOC->ODR |= 0b1 << 13;
     }
     is_read = 1;
   }
