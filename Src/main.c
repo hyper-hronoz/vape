@@ -1,7 +1,6 @@
 #include "stm32f1xx.h"
 
-// system clock configurations
-#include "configure_SYSCLOCK.h"
+// system clock configurations #include "configure_SYSCLOCK.h"
 
 // buses configurations
 #include "configure_AHB.h"
@@ -28,17 +27,23 @@
 
 void EXTI4_IRQHandler(void) {
   __disable_irq();
-  // NVIC_DisableIRQ(EXTI4_IRQn);
+
   delay(180);
 
   if (GPIOC->ODR & 0b1 << 13){
     GPIOC->ODR &= ~(0b1 << 13);
+    TIM2->PSC = 720 - 1; 
+    TIM2->ARR = 10000 - 1; 
+    TIM2->CCER |= 1;      
+    TIM2->CCMR1 |= 3 << 5; 
+    TIM2->CR1 |= 1;        // запускаем таймер
   } else {
     GPIOC->ODR |= 0b1 << 13;
+    TIM2->CR1 &= ~(1);        // отпускаем таймер
+    TIM2->CCER &= ~TIM_CCER_CC1E;
   }
 
 
-  // NVIC_EnableIRQ(EXTI4_IRQn);
   EXTI->PR |= EXTI_PR_PR4;
   __enable_irq();
 }
@@ -60,6 +65,7 @@ int main() {
 
   uint32_t currentclock = SystemCoreClock;
 
+  RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
   RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
   RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;
   RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
@@ -77,24 +83,21 @@ int main() {
   uint16_t encoder_counter_prev = 1000;
   int8_t is_read = 0;
 
-  __IO uint32_t saved_encoder_counter_value = *(__IO uint32_t *)0x08007C00;
+  __IO uint32_t saved_encoder_counter_value = *(__IO uint32_t *)VOLTAGE_ADDRESS;
   if (saved_encoder_counter_value < 1000) {
     encoder_counter_current = saved_encoder_counter_value;
   }
 
-
   // GPIOA->CRL |= 0b1011; // выход, частота 50МГц
-  // GPIOA->CRL &= 0b1011; // пушпул, альтернативная функция
-  
-  // TIM2->PSC = 7200 - 1; // насколько делится максимальная частота
-  // TIM2->ARR = 10000 - 1; // до скольки таймер считает перед сбросом
-  // TIM2->CCR1 = 5000 - 1; // на каком числе переключение
-  // TIM2->CCER |= 1;       // разблокируем выход
-  // TIM2->CCMR1 |= 3 << 5; // режим ШИМ1
-  // TIM2->CR1 |= 1;        // запускаем таймер
+  // GPIOA->CRL &= ~(0b1011); // пушпул, альтернативная функция
+  // GPIOA->CRL &= ~(0b1111);
+  // GPIOA->CRL |= GPIO_CRL_MODE0 | GPIO_CRL_CNF0;
+  GPIOA->CRL &= ~(GPIO_CRL_CNF0_Msk | GPIO_CRL_MODE0_Msk);
+  GPIOA->CRL |= (GPIO_CRL_MODE0_Msk);
+  GPIOA->CRL |= (GPIO_CRL_CNF0_1);
+
 
   // enabling gpio encoder iterrupt
-  RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
   AFIO->EXTICR[1] &= ~(AFIO_EXTICR2_EXTI4);
 
   EXTI->IMR |= EXTI_IMR_IM4;
@@ -106,7 +109,11 @@ int main() {
 
   EXTI->PR |= EXTI_PR_PR4;
 
+  // do not delete without this does not work!!!
+  TIM1->CNT |= saved_encoder_counter_value;
+
   while (1) {
+    TIM2->CCR1 = (10000 / 300 - 1) * encoder_counter_current; // на каком числе переключение
     if (is_read) {
       encoder_counter_current = TIM1->CNT;
     }
@@ -119,8 +126,8 @@ int main() {
       SSD1306_UpdateScreen();
 
       flash_unlock();
-      flash_erase_page(VOLATAGE_ADDRESS);
-      flash_write(VOLATAGE_ADDRESS, encoder_counter_current);
+      flash_erase_page(VOLTAGE_ADDRESS);
+      flash_write(VOLTAGE_ADDRESS, encoder_counter_current);
       flash_lock();
 
       encoder_counter_prev = encoder_counter_current;

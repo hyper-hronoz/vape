@@ -6,7 +6,7 @@
 #define FLASH_KEY1 ((uint32_t)0x45670123)
 #define FLASH_KEY2 ((uint32_t)0xCDEF89AB)
 
-#define VOLATAGE_ADDRESS 0x08007C00
+#define VOLTAGE_ADDRESS 0x08007B00
 
 void flash_unlock(void);
 
